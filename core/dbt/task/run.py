@@ -791,6 +791,7 @@ class MicrobatchModelRunner(ModelRunner):
                 batch_results=batch_results,
                 pool=self.pool,
                 skip=skip_batches,
+                incremental_batch=self._is_incremental(model=model),
             )
             batch_idx += 1
 
@@ -824,6 +825,7 @@ class MicrobatchModelRunner(ModelRunner):
                 pool=self.pool,
                 force_sequential_run=True,
                 skip=skip_batches,
+                incremental_batch=self._is_incremental(model=model),
             )
 
         # Finalize run: merge results, track model run, and print final result line
