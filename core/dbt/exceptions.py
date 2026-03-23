@@ -1203,11 +1203,18 @@ class AmbiguousCatalogMatchError(CompilationError):
         match_name = match.get("metadata", {}).get("name")
         return f"{match_schema}.{match_name}"
 
+    def get_resource_description(self) -> str:
+        """Return a human-readable resource description based on the unique_id prefix."""
+        resource_type = self.unique_id.split(".")[0] if "." in self.unique_id else "model"
+        if resource_type == "source":
+            return f'is associated with the source "{self.unique_id}"'
+        return f'was created by the {resource_type} "{self.unique_id}"'
+
     def get_message(self) -> str:
         msg = (
             "dbt found two relations in your warehouse with similar database identifiers. "
-            "dbt\nis unable to determine which of these relations was created by the model "
-            f'"{self.unique_id}".\nIn order for dbt to correctly generate the catalog, one '
+            f"dbt\nis unable to determine which of these relations {self.get_resource_description()}.\n"
+            "In order for dbt to correctly generate the catalog, one "
             "of the following relations must be deleted or renamed:\n\n - "
             f"{self.get_match_string(self.match_1)}\n - {self.get_match_string(self.match_2)}"
         )
